@@ -62,18 +62,26 @@ const Assessment = () => {
           return acc;
         }, {} as Record<string, string>);
         
-        // If user is authenticated, save to database
+        // If user is authenticated (practitioner), save to database
         if (user) {
           await saveAssessment(patientDetails, responsesObj);
-          toast.success("Assessment saved successfully!");
+          toast.success("Assessment saved to your dashboard!");
           navigate("/dashboard");
         } else {
-          // If not authenticated, save to localStorage for anonymous users
+          // For patients (no login required), save to localStorage
           localStorage.setItem('prakruti-responses', JSON.stringify(responses));
+          toast.success("Assessment completed! View your results.");
           navigate('/results');
         }
       } catch (error) {
-        toast.error("Failed to save assessment. Please try again.");
+        // If database save fails but user is authenticated, fall back to localStorage
+        if (user) {
+          localStorage.setItem('prakruti-responses', JSON.stringify(responses));
+          toast.error("Couldn't save to dashboard, but your results are ready to view.");
+          navigate('/results');
+        } else {
+          toast.error("Failed to save assessment. Please try again.");
+        }
         console.error(error);
       } finally {
         setIsSubmitting(false);

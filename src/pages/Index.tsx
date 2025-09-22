@@ -18,20 +18,20 @@ const Index = () => {
             Discover Your <span className="text-primary">Prakruti</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-3xl mx-auto">
-            Unveil your unique Ayurvedic constitution through our comprehensive 18-question assessment. 
-            Understand your natural tendencies, balance your doshas, and receive personalized lifestyle recommendations.
+            Get instant insights into your unique Ayurvedic constitution with our comprehensive assessment. 
+            No registration required - just provide your phone number and discover your personalized wellness recommendations.
           </p>
           <div className="flex gap-4 justify-center">
             <Link to="/patient-info">
               <Button className="text-lg px-8 py-4 bg-gradient-primary hover:opacity-90 shadow-soft">
-                Begin Your Journey
+                Take Free Assessment
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Link to="/auth">
               <Button variant="outline" className="text-lg px-6 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
                 <LogIn className="mr-2 w-5 h-5" />
-                Practitioner Login
+                Practitioner Portal
               </Button>
             </Link>
           </div>

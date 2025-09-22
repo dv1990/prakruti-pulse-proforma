@@ -97,10 +97,10 @@ const PatientInfo = () => {
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">
-            Patient Information
+            Start Your Assessment
           </h1>
           <p className="text-muted-foreground">
-            Please provide your details before beginning the Prakruti assessment
+            No account needed - just provide your details to get your personalized Ayurvedic constitution report
           </p>
         </div>
 
@@ -108,7 +108,7 @@ const PatientInfo = () => {
           <CardHeader className="bg-gradient-sage rounded-t-lg">
             <CardTitle className="text-xl font-semibold text-foreground flex items-center">
               <User className="w-5 h-5 mr-2" />
-              Personal Details
+              Your Details
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -175,9 +175,9 @@ const PatientInfo = () => {
               {/* Privacy Notice */}
               <div className="bg-muted/50 p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  <strong>Privacy Note:</strong> Your personal information is stored locally on your device 
-                  and is only used for generating personalized assessment reports. We do not share or store 
-                  your data on external servers.
+                  <strong>Note:</strong> No account required! Simply provide your details to get your personalized 
+                  Ayurvedic constitution assessment. Your information is used only for generating your report and 
+                  remains private.
                 </p>
               </div>
 
