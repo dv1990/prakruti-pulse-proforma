@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Brain, Leaf, Heart, ArrowRight } from 'lucide-react';
+import { Brain, Leaf, Heart, ArrowRight, LogIn } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -21,12 +21,20 @@ const Index = () => {
             Unveil your unique Ayurvedic constitution through our comprehensive 18-question assessment. 
             Understand your natural tendencies, balance your doshas, and receive personalized lifestyle recommendations.
           </p>
-          <Link to="/patient-info">
-            <Button className="text-lg px-8 py-4 bg-gradient-primary hover:opacity-90 shadow-soft">
-              Begin Your Journey
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link to="/patient-info">
+              <Button className="text-lg px-8 py-4 bg-gradient-primary hover:opacity-90 shadow-soft">
+                Begin Your Journey
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="outline" className="text-lg px-6 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                <LogIn className="mr-2 w-5 h-5" />
+                Practitioner Login
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 

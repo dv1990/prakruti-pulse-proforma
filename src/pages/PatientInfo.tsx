@@ -6,10 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, User, Calendar, Phone } from 'lucide-react';
 import { PatientDetails } from '@/types/patient';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 
 const PatientInfo = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [patientDetails, setPatientDetails] = useState<PatientDetails>({
     name: '',
     age: 0,

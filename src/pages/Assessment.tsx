@@ -5,12 +5,20 @@ import { Response, QuestionOption } from '@/types/prakruti';
 import QuestionCard from '@/components/QuestionCard';
 import ProgressBar from '@/components/ProgressBar';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAssessmentData } from '@/hooks/useAssessmentData';
+import { PatientDetails } from '@/types/patient';
+import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Assessment = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { saveAssessment } = useAssessmentData();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
 
   useEffect(() => {
     // Check if patient details are provided
@@ -19,6 +27,7 @@ const Assessment = () => {
       navigate('/patient-info');
       return;
     }
+    setPatientDetails(JSON.parse(storedPatientDetails));
   }, [navigate]);
 
   const handleOptionSelect = (option: QuestionOption) => {
@@ -37,13 +46,38 @@ const Assessment = () => {
     return getCurrentResponse() !== null;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentQuestion < prakrutiQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Navigate to results with responses
-      localStorage.setItem('prakruti-responses', JSON.stringify(responses));
-      navigate('/results');
+      // Assessment complete
+      if (!patientDetails) return;
+      
+      setIsSubmitting(true);
+      
+      try {
+        // Convert responses to the format expected by the hook
+        const responsesObj = responses.reduce((acc, response) => {
+          acc[response.questionId] = response.selectedOption.dosha;
+          return acc;
+        }, {} as Record<string, string>);
+        
+        // If user is authenticated, save to database
+        if (user) {
+          await saveAssessment(patientDetails, responsesObj);
+          toast.success("Assessment saved successfully!");
+          navigate("/dashboard");
+        } else {
+          // If not authenticated, save to localStorage for anonymous users
+          localStorage.setItem('prakruti-responses', JSON.stringify(responses));
+          navigate('/results');
+        }
+      } catch (error) {
+        toast.error("Failed to save assessment. Please try again.");
+        console.error(error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -89,10 +123,15 @@ const Assessment = () => {
 
           <Button
             onClick={handleNext}
-            disabled={!canGoNext()}
+            disabled={!canGoNext() || isSubmitting}
             className="flex items-center space-x-2 bg-gradient-primary hover:opacity-90"
           >
-            <span>{currentQuestion === prakrutiQuestions.length - 1 ? 'View Results' : 'Next'}</span>
+            <span>
+              {currentQuestion === prakrutiQuestions.length - 1 
+                ? (isSubmitting ? 'Saving...' : 'Complete Assessment')
+                : 'Next'
+              }
+            </span>
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>

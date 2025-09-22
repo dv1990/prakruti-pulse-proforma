@@ -14,7 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessments: {
+        Row: {
+          created_at: string
+          id: string
+          kapha_score: number
+          patient_id: string
+          pitta_score: number
+          practitioner_id: string
+          primary_dosha: string
+          responses: Json
+          vata_score: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kapha_score: number
+          patient_id: string
+          pitta_score: number
+          practitioner_id: string
+          primary_dosha: string
+          responses: Json
+          vata_score: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kapha_score?: number
+          patient_id?: string
+          pitta_score?: number
+          practitioner_id?: string
+          primary_dosha?: string
+          responses?: Json
+          vata_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessments_practitioner_id_fkey"
+            columns: ["practitioner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patients: {
+        Row: {
+          age: number
+          created_at: string
+          id: string
+          mobile_number: string
+          name: string
+          practitioner_id: string
+          updated_at: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          id?: string
+          mobile_number: string
+          name: string
+          practitioner_id: string
+          updated_at?: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          id?: string
+          mobile_number?: string
+          name?: string
+          practitioner_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patients_practitioner_id_fkey"
+            columns: ["practitioner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          license_number: string | null
+          practice_name: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          license_number?: string | null
+          practice_name?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          license_number?: string | null
+          practice_name?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +147,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "practitioner" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +274,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["practitioner", "admin"],
+    },
   },
 } as const
