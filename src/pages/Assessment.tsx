@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { prakrutiQuestions } from '@/data/questions';
 import { Response, QuestionOption } from '@/types/prakruti';
@@ -11,6 +11,15 @@ const Assessment = () => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<Response[]>([]);
+
+  useEffect(() => {
+    // Check if patient details are provided
+    const storedPatientDetails = localStorage.getItem('patient-details');
+    if (!storedPatientDetails) {
+      navigate('/patient-info');
+      return;
+    }
+  }, [navigate]);
 
   const handleOptionSelect = (option: QuestionOption) => {
     const questionId = prakrutiQuestions[currentQuestion].id;

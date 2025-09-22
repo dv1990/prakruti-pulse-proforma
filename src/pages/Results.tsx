@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Response, PrakrutiResult } from '@/types/prakruti';
+import { PatientDetails } from '@/types/patient';
 import { calculateDoshaScores, determinePrakruti } from '@/utils/prakrutiAnalysis';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Share2, RefreshCw } from 'lucide-react';
+import { Share2, RefreshCw, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import ExportDialog from '@/components/ExportDialog';
 
@@ -13,25 +14,33 @@ const Results = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState<PrakrutiResult | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
+  const [patientDetails, setPatientDetails] = useState<PatientDetails | null>(null);
 
   useEffect(() => {
     const storedResponses = localStorage.getItem('prakruti-responses');
-    if (!storedResponses) {
+    const storedPatientDetails = localStorage.getItem('patient-details');
+    
+    if (!storedResponses || !storedPatientDetails) {
       navigate('/');
       return;
     }
 
     const responses: Response[] = JSON.parse(storedResponses);
+    const patientDetails: PatientDetails = JSON.parse(storedPatientDetails);
+    
     setResponses(responses);
+    setPatientDetails(patientDetails);
+    
     const scores = calculateDoshaScores(responses);
     const prakrutiResult = determinePrakruti(scores);
     setResult(prakrutiResult);
   }, [navigate]);
 
   const handleShare = async () => {
-    if (!result) return;
+    if (!result || !patientDetails) return;
     
-    const shareText = `My Ayurvedic Prakruti: ${result.constitution}\n\nVata: ${result.scores.vata}%\nPitta: ${result.scores.pitta}%\nKapha: ${result.scores.kapha}%\n\nDiscover your constitution at ${window.location.origin}`;
+    const shareText = `${patientDetails.name}'s Ayurvedic Prakruti: ${result.constitution}\n\nVata: ${result.scores.vata}%\nPitta: ${result.scores.pitta}%\nKapha: ${result.scores.kapha}%\n\nDiscover your constitution at ${window.location.origin}`;
+    
     
     if (navigator.share) {
       try {
@@ -69,7 +78,7 @@ const Results = () => {
     return descriptions[dosha as keyof typeof descriptions];
   };
 
-  if (!result) {
+  if (!result || !patientDetails) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -85,9 +94,30 @@ const Results = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-8">
       <div className="max-w-4xl mx-auto">
+        {/* Patient Info Header */}
+        <Card className="mb-6 shadow-soft">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <User className="w-5 h-5 text-primary" />
+                <div>
+                  <h3 className="font-semibold text-lg">{patientDetails.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Age: {patientDetails.age} • Mobile: {patientDetails.mobileNumber}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Assessment Date</p>
+                <p className="text-sm font-medium">{new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            Your Prakruti Analysis
+            Prakruti Analysis Report
           </h1>
           <p className="text-xl text-muted-foreground">
             {result.constitution}
@@ -153,11 +183,11 @@ const Results = () => {
             <span>Share Results</span>
           </Button>
           
-          <ExportDialog result={result} responses={responses} />
+          <ExportDialog result={result} responses={responses} patientDetails={patientDetails} />
           
           <Button
             variant="outline"
-            onClick={() => navigate('/assessment')}
+            onClick={() => navigate('/patient-info')}
             className="flex items-center space-x-2"
           >
             <RefreshCw className="w-4 h-4" />

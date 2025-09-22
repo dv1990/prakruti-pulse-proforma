@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,18 +6,27 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, FileText, Table, Database } from 'lucide-react';
 import { PrakrutiResult } from '@/types/prakruti';
+import { PatientDetails } from '@/types/patient';
 import { exportToPDF, exportToCSV, exportDetailedJSON } from '@/utils/exportUtils';
 import { toast } from '@/hooks/use-toast';
 
 interface ExportDialogProps {
   result: PrakrutiResult;
   responses?: any[];
+  patientDetails?: PatientDetails;
 }
 
-const ExportDialog = ({ result, responses = [] }: ExportDialogProps) => {
-  const [userName, setUserName] = useState('');
+const ExportDialog = ({ result, responses = [], patientDetails }: ExportDialogProps) => {
+  const [userName, setUserName] = useState(patientDetails?.name || '');
   const [isExporting, setIsExporting] = useState(false);
   const [open, setOpen] = useState(false);
+
+  // Update userName when patientDetails change
+  useEffect(() => {
+    if (patientDetails?.name) {
+      setUserName(patientDetails.name);
+    }
+  }, [patientDetails]);
 
   const handleExport = async (type: 'pdf' | 'csv' | 'json') => {
     if (!userName.trim()) {
@@ -35,13 +44,13 @@ const ExportDialog = ({ result, responses = [] }: ExportDialogProps) => {
     try {
       switch (type) {
         case 'pdf':
-          success = await exportToPDF(result, userName);
+          success = await exportToPDF(result, userName, patientDetails);
           break;
         case 'csv':
-          success = exportToCSV(result, userName);
+          success = exportToCSV(result, userName, patientDetails);
           break;
         case 'json':
-          success = exportDetailedJSON(result, userName, responses);
+          success = exportDetailedJSON(result, userName, responses, patientDetails);
           break;
       }
 

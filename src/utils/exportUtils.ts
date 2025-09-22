@@ -1,8 +1,9 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { PrakrutiResult } from '@/types/prakruti';
+import { PatientDetails } from '@/types/patient';
 
-export const exportToPDF = async (result: PrakrutiResult, userName: string = 'User') => {
+export const exportToPDF = async (result: PrakrutiResult, userName: string = 'User', patientDetails?: PatientDetails) => {
   try {
     // Create a new PDF document
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -26,24 +27,30 @@ export const exportToPDF = async (result: PrakrutiResult, userName: string = 'Us
       day: 'numeric' 
     });
     pdf.text(`Assessment Date: ${currentDate}`, 20, 40);
-    pdf.text(`Name: ${userName}`, 20, 48);
+    pdf.text(`Patient Name: ${userName}`, 20, 48);
+    
+    if (patientDetails) {
+      pdf.text(`Age: ${patientDetails.age} years`, 20, 56);
+      pdf.text(`Mobile: ${patientDetails.mobileNumber}`, 20, 64);
+    }
     
     // Constitution Result
     pdf.setFontSize(18);
     pdf.setTextColor(0, 0, 0);
-    pdf.text('Constitution Analysis', 20, 65);
+    const yStart = patientDetails ? 80 : 65;
+    pdf.text('Constitution Analysis', 20, yStart);
     
     pdf.setFontSize(16);
     pdf.setTextColor(34, 69, 34);
-    pdf.text(`Primary Constitution: ${result.constitution}`, 20, 80);
+    pdf.text(`Primary Constitution: ${result.constitution}`, 20, yStart + 15);
     
     // Dosha Scores
     pdf.setFontSize(14);
     pdf.setTextColor(0, 0, 0);
-    pdf.text('Dosha Distribution:', 20, 100);
+    pdf.text('Dosha Distribution:', 20, yStart + 35);
     
     const total = result.scores.vata + result.scores.pitta + result.scores.kapha;
-    let yPos = 110;
+    let yPos = yStart + 45;
     
     Object.entries(result.scores).forEach(([dosha, score]) => {
       const percentage = Math.round((score / total) * 100);
@@ -93,7 +100,7 @@ export const exportToPDF = async (result: PrakrutiResult, userName: string = 'Us
   }
 };
 
-export const exportToCSV = (result: PrakrutiResult, userName: string = 'User') => {
+export const exportToCSV = (result: PrakrutiResult, userName: string = 'User', patientDetails?: PatientDetails) => {
   try {
     const currentDate = new Date().toISOString();
     const total = result.scores.vata + result.scores.pitta + result.scores.kapha;
@@ -103,7 +110,11 @@ export const exportToCSV = (result: PrakrutiResult, userName: string = 'User') =
       ['Prakruti Assessment Results'],
       [''],
       ['Assessment Date', currentDate],
-      ['Name', userName],
+      ['Patient Name', userName],
+      ...(patientDetails ? [
+        ['Age', patientDetails.age.toString()],
+        ['Mobile Number', patientDetails.mobileNumber]
+      ] : []),
       ['Constitution', result.constitution],
       ['Primary Dosha', result.primaryDosha],
       ['Secondary Dosha', result.secondaryDosha || 'None'],
@@ -141,11 +152,11 @@ export const exportToCSV = (result: PrakrutiResult, userName: string = 'User') =
   }
 };
 
-export const exportDetailedJSON = (result: PrakrutiResult, userName: string = 'User', responses: any[] = []) => {
+export const exportDetailedJSON = (result: PrakrutiResult, userName: string = 'User', responses: any[] = [], patientDetails?: PatientDetails) => {
   try {
     const exportData = {
       assessmentDate: new Date().toISOString(),
-      userName,
+      patientDetails: patientDetails || { name: userName },
       constitution: result.constitution,
       primaryDosha: result.primaryDosha,
       secondaryDosha: result.secondaryDosha,

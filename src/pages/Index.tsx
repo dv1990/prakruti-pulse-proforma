@@ -21,7 +21,7 @@ const Index = () => {
             Unveil your unique Ayurvedic constitution through our comprehensive 18-question assessment. 
             Understand your natural tendencies, balance your doshas, and receive personalized lifestyle recommendations.
           </p>
-          <Link to="/assessment">
+          <Link to="/patient-info">
             <Button className="text-lg px-8 py-4 bg-gradient-primary hover:opacity-90 shadow-soft">
               Begin Your Journey
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -113,7 +113,7 @@ const Index = () => {
             </p>
           </div>
           <div className="mt-8">
-            <Link to="/assessment">
+            <Link to="/patient-info">
               <Button variant="outline" className="text-lg px-6 py-3 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
                 Start Assessment
               </Button>
