@@ -5,12 +5,14 @@ import { calculateDoshaScores, determinePrakruti } from '@/utils/prakrutiAnalysi
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Share2, Download, RefreshCw } from 'lucide-react';
+import { Share2, RefreshCw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import ExportDialog from '@/components/ExportDialog';
 
 const Results = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState<PrakrutiResult | null>(null);
+  const [responses, setResponses] = useState<Response[]>([]);
 
   useEffect(() => {
     const storedResponses = localStorage.getItem('prakruti-responses');
@@ -20,6 +22,7 @@ const Results = () => {
     }
 
     const responses: Response[] = JSON.parse(storedResponses);
+    setResponses(responses);
     const scores = calculateDoshaScores(responses);
     const prakrutiResult = determinePrakruti(scores);
     setResult(prakrutiResult);
@@ -149,6 +152,8 @@ const Results = () => {
             <Share2 className="w-4 h-4" />
             <span>Share Results</span>
           </Button>
+          
+          <ExportDialog result={result} responses={responses} />
           
           <Button
             variant="outline"
